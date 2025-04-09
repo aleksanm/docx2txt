@@ -8,11 +8,11 @@ use Symfony\Component\Process\Process;
 
 class Word
 {
-    protected $word;
+    protected string $word;
     
-    protected $binPath;
+    protected string $binPath;
     
-    protected $options = [];
+    protected array $options = [];
     
     public function __construct(string $binPath = null)
     {
