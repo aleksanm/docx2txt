@@ -1,16 +1,22 @@
 {
-    "name": "aleksanm/docx2txt",
-    "description": "Extract text from docx using docx2txt",
-    "autoload": {
-        "psr-4": {
-            "Aleksanm\\Docx2txt\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Aleksandrs Kalnins",
-            "email": "aleksandrs.miska@gmail.com"
-        }
-    ],
-    "require": {}
+  "name": "aleksanm/docx2txt",
+  "description": "Extract text from docx using docx2txt",
+  "autoload": {
+    "psr-4": {
+      "Aleksanm\\Docx2txt\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Aleksandrs Kalnins",
+      "email": "aleksandrs.miska@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "symfony/process": "v7.2.5"
+  },
+  "config": {
+    "sort-packages": true
+  }
 }
