@@ -1,0 +1,16 @@
+{
+    "name": "aleksanm/docx2txt",
+    "description": "Extract text from docx using docx2txt",
+    "autoload": {
+        "psr-4": {
+            "Aleksanm\\Docx2txt\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Aleksandrs Kalnins",
+            "email": "aleksandrs.miska@gmail.com"
+        }
+    ],
+    "require": {}
+}
