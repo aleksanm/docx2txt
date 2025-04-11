@@ -29,7 +29,7 @@ class Word
     
     public function text(): string
     {
-        $process = new Process(array_merge([$this->binPath], $this->options, [$this->word]));
+        $process = new Process(array_merge([$this->binPath], $this->options, [$this->word, '-']));
         $process->run();
         if (!$process->isSuccessful()) {
             throw new CouldNotExtractText($process);
@@ -58,10 +58,10 @@ class Word
     {
         $mapper = function (string $content): array {
             $content = trim($content);
-            if ('-' !== $content[0] ?? '') {
+            if ($content[0] !== '-' ?? '') {
                 $content = '-'.$content;
             }
-            return explode(' '.$content, 2);
+            return explode(' ', $content, 2);
             
         };
         
