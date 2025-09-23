@@ -14,12 +14,12 @@ class Word
     
     protected array $options = [];
     
-    public function __construct(string $binPath = null)
+    public function __construct(?string $binPath = null)
     {
         $this->binPath = $binPath ?? '/usr/bin/docx2txt';
     }
     
-    public static function getText(string $word, string $binPath = null, array $options = []): string
+    public static function getText(string $word, ?string $binPath = null, array $options = []): string
     {
         return (new static($binPath))
             ->setOptions($options)
@@ -29,7 +29,15 @@ class Word
     
     public function text(): string
     {
-        $process = new Process(array_merge([$this->binPath], $this->options, [$this->word, '-']));
+        // Check if '-' is already in options to avoid duplication
+        $hasStdoutOption = in_array('-', $this->options);
+        $command = array_merge([$this->binPath], [$this->word], $this->options);
+        
+        if (!$hasStdoutOption) {
+            $command[] = '-';
+        }
+        
+        $process = new Process($command);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new CouldNotExtractText($process);
@@ -58,11 +66,17 @@ class Word
     {
         $mapper = function (string $content): array {
             $content = trim($content);
-            if ($content[0] !== '-' ?? '') {
+            if (empty($content)) {
+                return [];
+            }
+            if ($content[0] !== '-') {
                 $content = '-'.$content;
             }
+            // Handle single character options like '-'
+            if ($content === '-') {
+                return ['-'];
+            }
             return explode(' ', $content, 2);
-            
         };
         
         $reducer = function (array $carry, array $option): array {
@@ -72,7 +86,7 @@ class Word
         return array_reduce(array_map($mapper, $options), $reducer, []);
     }
     
-    public static function getDoc(string $word, string $binPath = null, array $options = []): string
+    public static function getDoc(string $word, ?string $binPath = null, array $options = []): string
     {
         return (new static('/usr/bin/docx2txt'))
             ->setOptions($options)
