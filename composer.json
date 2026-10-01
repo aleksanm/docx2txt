@@ -13,8 +13,8 @@
     }
   ],
   "require": {
-    "php": "^8.2",
-    "symfony/process": "^7.2"
+    "php": "^8.4",
+    "symfony/process": "^8.1"
   },
   "config": {
     "sort-packages": true

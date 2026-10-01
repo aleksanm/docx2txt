@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 
 class Word
 {
-    protected string $word;
+    protected ?string $word = null;
     
     protected string $binPath;
     
@@ -29,21 +29,17 @@ class Word
     
     public function text(): string
     {
+        $this->ensureWordIsSet();
+
         // Check if '-' is already in options to avoid duplication
         $hasStdoutOption = in_array('-', $this->options);
         $command = array_merge([$this->binPath], [$this->word], $this->options);
-        
+
         if (!$hasStdoutOption) {
             $command[] = '-';
         }
-        
-        $process = new Process($command);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new CouldNotExtractText($process);
-        }
-        
-        return trim($process->getOutput(), " \t\n\r\0\x0B\x0C");
+
+        return $this->runProcess($command);
     }
     
     public function setWord(string $word): self
@@ -88,20 +84,34 @@ class Word
     
     public static function getDoc(string $word, ?string $binPath = null, array $options = []): string
     {
-        return (new static('/usr/bin/docx2txt'))
+        return (new static($binPath))
             ->setOptions($options)
             ->setWord($word)
             ->doc();
     }
-    
+
     public function doc(): string
     {
-        $process = new Process(array_merge([$this->binPath], $this->options, [$this->word]));
+        $this->ensureWordIsSet();
+
+        return $this->runProcess(array_merge([$this->binPath], $this->options, [$this->word]));
+    }
+
+    protected function ensureWordIsSet(): void
+    {
+        if ($this->word === null) {
+            throw new WordNotFound('No word file has been set. Call setWord() first.');
+        }
+    }
+
+    protected function runProcess(array $command): string
+    {
+        $process = new Process($command);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new CouldNotExtractText($process);
         }
-        
+
         return trim($process->getOutput(), " \t\n\r\0\x0B\x0C");
     }
     
