@@ -94,7 +94,26 @@ class Word
     {
         $this->ensureWordIsSet();
 
-        return $this->runProcess(array_merge([$this->binPath], $this->options, [$this->word]));
+        // '-' asks docx2txt for stdout, which is what text() does.
+        if (in_array('-', $this->options, true)) {
+            return $this->text();
+        }
+
+        // docx2txt prints nothing here: it saves the text next to the source file.
+        $file = $this->outputFile();
+        $this->runProcess([$this->binPath, $this->word, $file]);
+
+        return trim(file_get_contents($file), " \t\n\r\0\x0B\x0C");
+    }
+
+    /**
+     * Same name docx2txt picks itself when no output file is given.
+     */
+    protected function outputFile(): string
+    {
+        $file = preg_replace('/\.docx$/', '.txt', $this->word, 1, $count);
+
+        return $count > 0 ? $file : $this->word.'.txt';
     }
 
     protected function ensureWordIsSet(): void
